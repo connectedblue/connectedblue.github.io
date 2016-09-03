@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car journey times in Bristol, UK</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Car journey times in Bristol, UK">
+  <meta name="author" content="Chris Shaw">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Car journey times in Bristol, UK</h1>
+    <h2>Understanding traffic profiles</h2>
+    <p>Chris Shaw<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Introduction</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Bristol has deployed multiple sensors around the city and made data available in an open data project (<a href="https://opendata.bristol.gov.uk/">https://opendata.bristol.gov.uk/</a>)</li>
+<li>One dataset collects journey times from  different routes, varying in length from r min(summary$distance_miles) to r max(summary$distance_miles) miles.  This data is collected every ten minutes, 24 hours a day, seven days a week.</li>
+<li>We introduce today a brand new application that makes use of the historical journey times data to build up a profile of average traffic conditions in Bristol for every hour in every day.</li>
+<li> It&#39;s expected that this application will be used by commuters, small businesses and local government planners amongst others.</li>
+<li>The application can be accessed at <a href="https://connectedblue.shinyapps.io/bristoltraffic/">https://connectedblue.shinyapps.io/bristoltraffic/</a></li>
+<li>The following slides demonstrate how the application works</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Route data</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Bristol have installed Automatic Number Plate recognition at various points around the city.  From this they are able to track accurate mean journey times across various routes at all times of day and night.</li>
+<li>This data is published in raw form to the Open Data website.  The following table shows a summary of some example routes:</li>
+</ul>
+
+<table><thead>
+<tr>
+<th align="left">Route</th>
+<th align="center">Distance</th>
+<th align="center">Average Speed</th>
+<th align="center">Average journey time</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">M32 Newfoundland Circus IB to Old Market St West WB</td>
+<td align="center">0.4</td>
+<td align="center">12.1</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="left">M32 Newfoundland Circus IB to Avon St OB</td>
+<td align="center">0.7</td>
+<td align="center">19.8</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="left">M32 Newfoundland Circus IB to Bond St at Gloucester St WB</td>
+<td align="center">0.4</td>
+<td align="center">26.4</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="left">Bond St at Gloucester St EB to M32 Newfoundland Circus OB</td>
+<td align="center">0.4</td>
+<td align="center">23.1</td>
+<td align="center">2</td>
+</tr>
+<tr>
+<td align="left">Old Market St East IB to M32 Newfoundland Circus OB</td>
+<td align="center">0.4</td>
+<td align="center">4.2</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="left">Old Market St East IB to Avon St OB</td>
+<td align="center">0.3</td>
+<td align="center">3.5</td>
+<td align="center">7</td>
+</tr>
+<tr>
+<td align="left">Old Mkt East IB to Cattlemarket Rd OB</td>
+<td align="center">0.7</td>
+<td align="center">7.1</td>
+<td align="center">7</td>
+</tr>
+<tr>
+<td align="left">Old Market St West EB to Bond St at Gloucester St WB</td>
+<td align="center">0.4</td>
+<td align="center">8.3</td>
+<td align="center">5</td>
+</tr>
+</tbody></table>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Determining route status: red/amber/green</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Each route is analysed individually by day and hour.  The speed for each timeslot is compared to the overall route average speed.</li>
+<li><p>If it&#39;s greater than the mean speed, the status is green. If it&#39;s less than the mean minus half a standard deviation, the status is red. Otherwise it&#39;s orange.</p></li>
+<li><p>Here&#39;s an example for one route: M32 Newfoundland Circus IB to Old Market St West WB, on a Monday:</p></li>
+</ul>
+
+<table><thead>
+<tr>
+<th align="left"></th>
+<th align="right">Speed</th>
+<th align="left">Status</th>
+<th align="left"></th>
+<th align="right">Speed</th>
+<th align="left">Status</th>
+<th align="left"></th>
+<th align="right">Speed</th>
+<th align="left">Status</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="left">4 - 5am</td>
+<td align="right">15.0</td>
+<td align="left">green</td>
+<td align="left">8 - 9am</td>
+<td align="right">9.6</td>
+<td align="left">red</td>
+<td align="left">12 - 1pm</td>
+<td align="right">11.0</td>
+<td align="left">orange</td>
+</tr>
+<tr>
+<td align="left">5 - 6am</td>
+<td align="right">15.3</td>
+<td align="left">green</td>
+<td align="left">9 - 10am</td>
+<td align="right">9.8</td>
+<td align="left">red</td>
+<td align="left">1 - 2pm</td>
+<td align="right">10.3</td>
+<td align="left">orange</td>
+</tr>
+<tr>
+<td align="left">6 - 7am</td>
+<td align="right">13.9</td>
+<td align="left">green</td>
+<td align="left">10 - 11am</td>
+<td align="right">10.8</td>
+<td align="left">orange</td>
+<td align="left">2 - 3pm</td>
+<td align="right">10.6</td>
+<td align="left">orange</td>
+</tr>
+<tr>
+<td align="left">7 - 8am</td>
+<td align="right">11.0</td>
+<td align="left">orange</td>
+<td align="left">11 - 12am</td>
+<td align="right">11.0</td>
+<td align="left">orange</td>
+<td align="left">3 - 4pm</td>
+<td align="right">10.8</td>
+<td align="left">orange</td>
+</tr>
+</tbody></table>
+
+<ul>
+<li>The average speed for this route overall is 12.1mph, and the standard deviation is 4.2.  This means if an individual hour records an average of less than 10mph, then the status is shown as red.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Using the application</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>There are two main ways to view the data:  A map view and a bar chart view.  Both views can be changed dynamically by selecting the desired day from the panel of the left, and also the hour can be changed in the slider to see how traffic changes during the day.</p></li>
+<li><p>The map view shows the geographic locations of each route, with red, orange or green circles showing the status at any particular time.  If you click on a circle, you can see more details about the average speed and journey time during that particular hour.</p></li>
+<li><p>The bar chart view shows an ordered view, from the slowest to the fastest routes.  This allows you to see at a glance which are the most busiest routes for any particular hour.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Introduction'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Route data'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Determining route status: red/amber/green'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Using the application'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
