@@ -1,13 +1,5 @@
 base
-ggplot2
-shiny
-plotly
-leaflet
-dplyr
-rmarkdown
 slidify
 ProjectTemplate
-slidifyLibraries
-devtools
-XML
 knitr
+dplyr
